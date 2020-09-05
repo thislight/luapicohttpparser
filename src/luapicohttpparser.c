@@ -1,6 +1,6 @@
 #include "luapicohttpparser.h"
 
-const LPHR_INITIAL_EXTRA_BUFFER_SIZE = 512;
+const size_t LPHR_INITIAL_EXTRA_BUFFER_SIZE = 512;
 
 int auto_free_buffer(lua_State* L){
     void** bufferpointer = luaL_checkudata(L, 1, "__buffer_meta");
@@ -83,7 +83,7 @@ int lphr_parse_request(lua_State *L) {
     size_t method_len, path_len, num_headers;
     num_headers = sizeof(headers) / sizeof(headers[0]);
 
-    int pret = phr_parse_request(*bufferpointer, buffer_length, &method, &method_len, &path, &path_len, &minor_version, headers, &num_headers, prev_buffer_length);
+    int pret = phr_parse_request(*bufferpointer, buffer_length, (const char**)&method, &method_len, (const char**)(&path), &path_len, &minor_version, headers, &num_headers, prev_buffer_length);
 
     if (method_len){
         lua_pushlstring(L, method, method_len);
