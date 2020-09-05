@@ -4,3 +4,5 @@ lua
 luarocks
 .luarocks
 .vscode
+*.o
+*.so
