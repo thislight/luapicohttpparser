@@ -40,7 +40,7 @@ static int lphr_parse_request(lua_State *L) {
         *bufferpointer = buffer;
         set_auto_free_buffer_metatable(L);
         lua_setfield(L, -3, "buffer"); // expect stack -3: #2
-        lua_pushinteger(L, buflen);
+        lua_pushinteger(L, 0);
         lua_setfield(L, -3, "buffer_length"); // expect stack -3: #2
     }
     // now stack top is #2.buffer
@@ -74,7 +74,7 @@ static int lphr_parse_request(lua_State *L) {
         lua_setfield(L, -2, "buffer_length"); // sync new buffer length with arguemnt #2
     }
     char *buffer_last_empty_start = *bufferpointer + prev_buffer_length;
-    memcpy(buffer_last_empty_start, chunk, chunk_length);
+    memcpy(buffer_last_empty_start, chunk, chunk[chunk_length-1] == '\0' ? chunk_length-1: chunk_length);
 
     // now stack top is #2
     int minor_version;
