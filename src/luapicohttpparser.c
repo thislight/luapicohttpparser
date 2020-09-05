@@ -1,15 +1,15 @@
 #include "luapicohttpparser.h"
 
-const size_t LPHR_INITIAL_EXTRA_BUFFER_SIZE = 512;
+static const size_t LPHR_INITIAL_EXTRA_BUFFER_SIZE = 512;
 
-int auto_free_buffer(lua_State* L){
-    void** bufferpointer = luaL_checkudata(L, 1, "__buffer_meta");
+static int auto_free_buffer(lua_State* L){
+    void** bufferpointer = luaL_checkudata(L, 1, NULL);
     free(*bufferpointer);
     *bufferpointer = NULL;
     return 0;
 }
 
-void set_auto_free_buffer_metatable(lua_State* L){
+static void set_auto_free_buffer_metatable(lua_State* L){
     lua_checkstack(L, 2);
     lua_newtable(L);
     lua_pushcfunction(L, &auto_free_buffer);
@@ -25,7 +25,7 @@ for str in source do
     lphr.parse_request(str, data)
 end
 */
-int lphr_parse_request(lua_State *L) {
+static int lphr_parse_request(lua_State *L) {
     const char *chunk = luaL_checklstring(L, 1, NULL);
     lua_Integer chunk_length = luaL_len(L, 1);
     luaL_checktype(L, 2, LUA_TTABLE);
@@ -44,7 +44,7 @@ int lphr_parse_request(lua_State *L) {
         lua_setfield(L, -3, "buffer_length"); // expect stack -3: #2
     }
     // now stack top is #2.buffer
-    lua_pop(L, -1); // remove #2.buffer
+    lua_pop(L, 1); // remove #2.buffer
 
     char **bufferpointer;
     if (lua_getfield(L, -1, "buffer") == LUA_TUSERDATA){
@@ -52,7 +52,7 @@ int lphr_parse_request(lua_State *L) {
     } else {
         luaL_error(L, "the type of 'buffer' in #2 parameter must be 'userdata' (got %s)", luaL_typename(L, -1));
     }
-    lua_pop(L, -1); // remove #2.buffer
+    lua_pop(L, 1); // remove #2.buffer
 
     // now stack top is #2
     size_t buffer_length;
@@ -62,7 +62,7 @@ int lphr_parse_request(lua_State *L) {
     } else {
         luaL_error(L, "the type of 'buffer_length' in #2 parameter must be 'number' (got %s)", luaL_typename(L, -1));
     }
-    lua_pop(L, -1); // remove #2.buffer_length
+    lua_pop(L, 1); // remove #2.buffer_length
 
     // now stack top is #2
     size_t prev_buffer_length = buffer_length;
@@ -118,10 +118,12 @@ int lphr_parse_request(lua_State *L) {
     return 1;
 }
 
-LUA_LIB int luaopen_lphr_c(lua_State* L){
-    struct luaL_Reg reg[] = {
+static const luaL_Reg lphr_c_lib[] = {
         {"parse_request", lphr_parse_request},
+        {NULL, NULL},
     };
-    luaL_newlib(L, reg);
+
+LUA_LIB int luaopen_lphr_c(lua_State *L){
+    luaL_newlib(L, lphr_c_lib);
     return 1;
 }

@@ -7,7 +7,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-int lphr_parse_request(lua_State *L);
+static int lphr_parse_request(lua_State *L);
 
 // int lphr_parse_response(lua_State *L);
 
