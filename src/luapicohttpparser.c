@@ -117,3 +117,11 @@ int lphr_parse_request(lua_State *L) {
     lua_pushinteger(L, pret);
     return 1;
 }
+
+LUA_LIB int luaopen_lphr_c(lua_State* L){
+    struct luaL_Reg reg[] = {
+        {"parse_request", lphr_parse_request},
+    };
+    luaL_newlib(L, reg);
+    return 1;
+}

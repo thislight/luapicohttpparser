@@ -9,10 +9,10 @@
 
 int lphr_parse_request(lua_State *L);
 
-int lphr_parse_response(lua_State *L);
+// int lphr_parse_response(lua_State *L);
 
-int lphr_parse_headers(lua_State *L);
+// int lphr_parse_headers(lua_State *L);
 
-int lphr_decode_chunked(lua_State *L);
+// int lphr_decode_chunked(lua_State *L);
 
-LUALIB_API int luaopenlib_lphr(lua_State *L);
+LUALIB_API int luaopen_lphr_c(lua_State *L);

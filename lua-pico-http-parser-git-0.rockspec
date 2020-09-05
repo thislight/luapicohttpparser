@@ -13,7 +13,7 @@ build = {
    modules = {
       lphr = "src/luapicohttpparser.lua",
       ['lphr.c'] = {
-         sources = {'src/luapicohttpparser.c'},
+         sources = {'src/luapicohttpparser.c', 'picohttpparser/picohttpparser.c'},
          incdirs = {'src/', 'picohttpparser/'},
          libdirs = {'picohttpparser/'},
       }
