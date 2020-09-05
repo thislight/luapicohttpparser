@@ -103,15 +103,21 @@ static int lphr_parse_request(lua_State *L) {
             lua_setfield(L, -3, "headers");
         }
         lua_pop(L, 1);
+
         // now stack top: #2
+        lua_getfield(L, -1, "headers");
+        // now stack top: #2.headers (expect a table)
         for (int i=0; i<num_headers; i++){
             struct phr_header *header = &(headers[i]);
             lua_createtable(L, 2, 0);
             lua_pushlstring(L, header->name, header->name_len);
             lua_seti(L, -2, 1);
             lua_pushlstring(L, header->value, header->value_len);
-            lua_seti(L, -2, 1);
+            lua_seti(L, -2, 2);
+            lua_seti(L, -2, luaL_len(L, -2)+1);
         }
+        lua_pop(L, 1);
+        // now stack top #2
     }
 
     lua_pushinteger(L, pret);
