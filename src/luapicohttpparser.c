@@ -150,7 +150,7 @@ static int lphr_parse_response(lua_State *L){
     size_t msglen = 0;
     struct phr_header headers[LPHR_DEFAULT_HEADERS_NUMBER];
     size_t num_headers = sizeof(headers) / sizeof(headers[0]);
-    int pret = phr_parse_response(chunk, (size_t)chunklen, &minor_version, &status, &msg, &msglen, headers, &num_headers, last_len);
+    int pret = phr_parse_response(chunk, (size_t)chunklen, &minor_version, &status, (const char**)&msg, &msglen, headers, &num_headers, last_len);
 
     lua_pushinteger(L, chunklen);
     lua_setfield(L, -2, "__last_len");
