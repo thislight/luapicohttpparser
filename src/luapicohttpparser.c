@@ -88,7 +88,7 @@ static int lphr_parse_request(lua_State *L) {
     if (method_len){
         lua_pushlstring(L, method, method_len);
         lua_setfield(L, -2, "method");
-        lua_pushinteger(L, minor_version); // when method have got, the minor version must be got
+        lua_pushinteger(L, minor_version); // when method have got, the minor version must be got, phr_parse_request() parse request only if the request is complete.
         lua_setfield(L, -2, "minor_version");
     }
 
