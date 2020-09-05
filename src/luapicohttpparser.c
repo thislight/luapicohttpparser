@@ -2,6 +2,8 @@
 
 static const size_t LPHR_INITIAL_EXTRA_BUFFER_SIZE = 512;
 
+static const int LPHR_DEFAULT_HEADERS_NUMBER = 64;
+
 static int auto_free_buffer(lua_State* L){
     void** bufferpointer = luaL_checkudata(L, 1, NULL);
     free(*bufferpointer);
@@ -79,7 +81,7 @@ static int lphr_parse_request(lua_State *L) {
     // now stack top is #2
     int minor_version;
     char *method, *path;
-    struct phr_header headers[32];
+    struct phr_header headers[LPHR_DEFAULT_HEADERS_NUMBER];
     size_t method_len, path_len, num_headers;
     num_headers = sizeof(headers) / sizeof(headers[0]);
 
@@ -146,7 +148,7 @@ static int lphr_parse_response(lua_State *L){
     int minor_version, status;
     char *msg;
     size_t msglen = 0;
-    struct phr_header headers[32];
+    struct phr_header headers[LPHR_DEFAULT_HEADERS_NUMBER];
     size_t num_headers = sizeof(headers) / sizeof(headers[0]);
     int pret = phr_parse_response(chunk, (size_t)chunklen, &minor_version, &status, &msg, &msglen, headers, &num_headers, last_len);
 
