@@ -124,8 +124,76 @@ static int lphr_parse_request(lua_State *L) {
     return 1;
 }
 
+static int lphr_parse_response(lua_State *L){
+    const char* chunk = luaL_checklstring(L, 1, NULL);
+    lua_Integer chunklen = luaL_len(L, 1);
+    luaL_checktype(L, 2, LUA_TTABLE);
+    lua_settop(L, 2);
+    // now stack top: #2
+    lua_assert(L, chunklen <= ULONG_MAX, "expect chunk's length is not greater than the max of size_t");
+
+    size_t last_len;
+    if (lua_getfield(L, -1, "__last_len") == LUA_TNUMBER){
+        last_len = (size_t)lua_tointeger(L, -1); // chunklen always is not greater than size_t
+    } else {
+        last_len = 0;
+        lua_pushinteger(L, last_len);
+        lua_setfield(L, -3, "__last_len");
+    }
+    lua_pop(L, 1);
+
+    // now stack top is #2
+    int minor_version, status;
+    char *msg;
+    size_t msglen = 0;
+    struct phr_header headers[32];
+    size_t num_headers = sizeof(headers) / sizeof(headers[0]);
+    int pret = phr_parse_response(chunk, (size_t)chunklen, &minor_version, &status, &msg, &msglen, headers, &num_headers, last_len);
+
+    lua_pushinteger(L, chunklen);
+    lua_setfield(L, -2, "__last_len");
+
+    if (pret > 0){
+        lua_pushinteger(L, minor_version);
+        lua_setfield(L, -2, "minor_version");
+
+        lua_pushinteger(L, status);
+        lua_setfield(L, -2, "status");
+
+        lua_pushlstring(L, msg, msglen);
+        lua_setfield(L, -2, "message");
+
+        if (num_headers > 0) {
+            if (lua_getfield(L, -1, "headers") != LUA_TTABLE) {
+                lua_createtable(L, num_headers, 0);
+                lua_setfield(L, -3, "headers");
+            }
+            lua_pop(L, 1);
+
+            // now stack top: #2
+            lua_getfield(L, -1, "headers");
+            // now stack top: #2.headers (expect a table)
+            for (int i = 0; i < num_headers; i++) {
+                struct phr_header *header = &(headers[i]);
+                lua_createtable(L, 2, 0);
+                lua_pushlstring(L, header->name, header->name_len);
+                lua_seti(L, -2, 1);
+                lua_pushlstring(L, header->value, header->value_len);
+                lua_seti(L, -2, 2);
+                lua_seti(L, -2, luaL_len(L, -2) + 1);
+            }
+            lua_pop(L, 1);
+            // now stack top: #2
+        }
+    }
+
+    lua_pushinteger(L, pret);
+    return 1;
+}
+
 static const luaL_Reg lphr_c_lib[] = {
         {"parse_request", lphr_parse_request},
+        {"parse_response", lphr_parse_response},
         {NULL, NULL},
     };
 
