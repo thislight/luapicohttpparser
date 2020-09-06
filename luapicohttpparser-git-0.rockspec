@@ -1,5 +1,5 @@
 rockspec_format = "3.0"
-package = "lua-pico-http-parser"
+package = "luapicohttpparser"
 version = "git-0"
 source = {
    url = "git+https://github.com/thislight/luapicohttpparser.git",
