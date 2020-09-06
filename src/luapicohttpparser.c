@@ -131,6 +131,7 @@ static int lphr_parse_response(lua_State *L){
     lua_Integer chunklen = luaL_len(L, 1);
     luaL_checktype(L, 2, LUA_TTABLE);
     lua_settop(L, 2);
+    lua_checkstack(L, 3);
     // now stack top: #2
     lua_assert(L, chunklen <= ULONG_MAX, "expect chunk's length is not greater than the max of size_t");
 
