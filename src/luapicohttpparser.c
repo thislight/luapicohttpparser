@@ -19,14 +19,7 @@ static void set_auto_free_buffer_metatable(lua_State* L){
     lua_setmetatable(L, -1);
 }
 
-/*
-local lphr = require "lphr"
 
-local data = {}
-for str in source do
-    lphr.parse_request(str, data)
-end
-*/
 static int lphr_parse_request(lua_State *L) {
     const char* chunk = luaL_checklstring(L, 1, NULL);
     lua_Integer chunklen = luaL_len(L, 1);
