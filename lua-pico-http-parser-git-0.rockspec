@@ -8,6 +8,10 @@ description = {
    homepage = "https://github.com/thislight/luapicohttpparser",
    license = "LGPL-3"
 }
+dependencies = {
+   "lua 5.3",
+   "strbuffer 1.0-1",
+}
 build = {
    type = "builtin",
    modules = {
