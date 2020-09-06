@@ -42,12 +42,15 @@ end
 
 print(string.format("generating data for %d request(s)...", REPEAT_TIMES))
 
+collectgarbage("setstepmul", 300)
+
 for i=1, REPEAT_TIMES do
     table.insert(dataset, generate_request())
 end
 
 print("used memeory (Kbytes):", collectgarbage("count"))
 
+collectgarbage("setstepmul", 200)
 
 print("---- lphr.parse_request ----")
 local t1 = os.time()
