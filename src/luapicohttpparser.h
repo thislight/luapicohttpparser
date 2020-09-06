@@ -7,7 +7,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-static inline int _lua_assert(lua_State *L, const char* expr, bool expr_result, const char *msg, const char *__file, long long __line){
+static inline int _lua_assert(lua_State *L, const char* expr, bool expr_result, const char *msg, const char *__file, int __line){
     if (!expr_result){
         luaL_error(L, "assert (%s) fail in %s (line %d): %s", expr, __file, __line, msg);
     }
