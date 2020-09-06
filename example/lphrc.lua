@@ -9,8 +9,10 @@ local RAW_REQUEST = {
 }
 
 local data = {}
+local buffer = ""
 for _, v in ipairs(RAW_REQUEST) do
-    local pret = lphrc.parse_request(v, data)
+    buffer = buffer..v
+    local pret = lphrc.parse_request(buffer, data)
     print("pret", pret)
     if pret ~= -2 then
         break
