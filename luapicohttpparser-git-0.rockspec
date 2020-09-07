@@ -6,7 +6,10 @@ source = {
 }
 description = {
    homepage = "https://github.com/thislight/luapicohttpparser",
-   license = "LGPL-3"
+   license = "LGPL-3",
+   summary = "lua binding for picohttpparser",
+   detailed = [[luapicohttpparser is a binding library for picohttpparser, a high-performance HTTP parser.]],
+   maintainer = "thisLight <l1589002388@gmail.com>"
 }
 dependencies = {
    "lua 5.3",
