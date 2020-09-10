@@ -157,9 +157,69 @@ static int lphr_parse_response(lua_State *L){
     return 1;
 }
 
+static int lphr_parse_request_r2(lua_State *L){
+    const char *chunk = luaL_checklstring(L, 1, NULL);
+    lua_Integer chunklen = luaL_len(L, 1);
+    lua_assert(L, chunklen <= ULONG_MAX, "expect chunk's length is not greater than the max of size_t");
+    lua_Integer last_len = 0;
+    if (!lua_isnoneornil(L, 2)){
+        last_len = luaL_checknumber(L, 2);
+    }
+
+    int minor_version;
+    char *method, *path;
+    size_t method_len, path_len;
+    struct phr_header headers[LPHR_DEFAULT_HEADERS_NUMBER];
+    size_t num_headers = sizeof(headers) / sizeof(headers[0]);
+    int pret = phr_parse_request(chunk, (size_t)chunklen, (const char**)(&method), &method_len, (const char**)(&path), &path_len, &minor_version,headers, &num_headers, last_len);
+
+    lua_checkstack(L, 3);
+    lua_pushinteger(L, pret);
+    lua_pushinteger(L, chunklen);
+
+    if (pret > 0){
+        lua_createtable(L, 0, 4);
+        lua_pushinteger(L, minor_version);
+        lua_setfield(L, -2, "minor_version");
+
+        lua_pushlstring(L, method, method_len);
+        lua_setfield(L, -2, "method");
+
+        lua_pushlstring(L, path, path_len);
+        lua_setfield(L, -2, "path");
+
+        if (num_headers > 0) {
+            if (lua_getfield(L, -1, "headers") != LUA_TTABLE) {
+                lua_createtable(L, num_headers, 0);
+                lua_setfield(L, -3, "headers");
+            }
+            lua_pop(L, 1);
+
+            // now stack top: #2
+            lua_getfield(L, -1, "headers");
+            // now stack top: #2.headers (expect a table)
+            for (int i = 0; i < num_headers; i++) {
+                struct phr_header *header = &(headers[i]);
+                lua_createtable(L, 2, 0);
+                lua_pushlstring(L, header->name, header->name_len);
+                lua_seti(L, -2, 1);
+                lua_pushlstring(L, header->value, header->value_len);
+                lua_seti(L, -2, 2);
+                lua_seti(L, -2, luaL_len(L, -2) + 1);
+            }
+            lua_pop(L, 1);
+            // now stack top: #2
+        }
+        return 3;
+    } else {
+        return 2;
+    }
+}
+
 static const luaL_Reg lphr_c_lib[] = {
         {"parse_request", lphr_parse_request},
         {"parse_response", lphr_parse_response},
+        {"parse_request_r2", lphr_parse_request_r2},
         {NULL, NULL},
     };
 

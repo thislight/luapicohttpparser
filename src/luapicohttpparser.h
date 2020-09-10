@@ -38,4 +38,6 @@ static int lphr_parse_response(lua_State *L);
 
 // int lphr_decode_chunked(lua_State *L);
 
+static int lphr_parse_request_r2(lua_State *L);
+
 LUALIB_API int luaopen_lphr_c(lua_State *L);
