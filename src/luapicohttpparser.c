@@ -21,22 +21,6 @@ static const size_t LPHR_INITIAL_EXTRA_BUFFER_SIZE = 512;
 
 static const int LPHR_DEFAULT_HEADERS_NUMBER = 64;
 
-static int auto_free_buffer(lua_State* L){
-    void** bufferpointer = luaL_checkudata(L, 1, NULL);
-    free(*bufferpointer);
-    *bufferpointer = NULL;
-    return 0;
-}
-
-static void set_auto_free_buffer_metatable(lua_State* L){
-    lua_checkstack(L, 2);
-    lua_newtable(L);
-    lua_pushcfunction(L, &auto_free_buffer);
-    lua_setfield(L, -2, "__gc");
-    lua_setmetatable(L, -1);
-}
-
-
 static int lphr_parse_request(lua_State *L) {
     const char* chunk = luaL_checklstring(L, 1, NULL);
     lua_Integer chunklen = luaL_len(L, 1);
