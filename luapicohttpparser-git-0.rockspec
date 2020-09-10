@@ -25,5 +25,6 @@ build = {
          libdirs = {'picohttpparser/'},
       },
       ['lphr.c.r2'] = 'src/r2.lua',
+      ['lphr.r2'] = 'src/luapicohttpparser2.lua',
    }
 }
