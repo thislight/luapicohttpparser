@@ -1,7 +1,9 @@
 local lphr = require "lphr"
 local lphrc = require "lphr.c"
+local lphr2 = require "lphr.r2"
+local lphrc2 = require "lphr.c.r2"
 
-local REPEAT_TIMES = 10^7
+local REPEAT_TIMES = 10^6
 
 local dataset = {}
 
@@ -42,15 +44,21 @@ end
 
 print(string.format("generating data for %d request(s)...", REPEAT_TIMES))
 
-collectgarbage("setstepmul", 300)
+collectgarbage("stop")
 
 for i=1, REPEAT_TIMES do
+    if i % (REPEAT_TIMES / 10) == 0 then
+        print("done "..i)
+        collectgarbage("collect")
+    end
     table.insert(dataset, generate_request())
 end
 
+collectgarbage("collect")
+
 print("used memeory (Kbytes):", collectgarbage("count"))
 
-collectgarbage("setstepmul", 200)
+collectgarbage("stop")
 
 print("---- lphr.parse_request ----")
 local t1 = os.time()
@@ -62,6 +70,7 @@ end
 local t2 = os.time()
 print(string.format("lphr.parse_request used %d sec, speed %s per second.", t2-t1, REPEAT_TIMES/(t2-t1)))
 
+collectgarbage("collect")
 
 print("---- lphr.c.parse_request ----")
 local t1 = os.time()
@@ -72,3 +81,27 @@ for _, v in ipairs(dataset) do
 end
 local t2 = os.time()
 print(string.format("lphr.c.parse_request used %d sec, speed %s request(s) per second.", t2-t1, REPEAT_TIMES/(t2-t1)))
+
+collectgarbage("collect")
+
+print("---- lphr.r2.parse_request ----")
+local t1 = os.time()
+for _, v in ipairs(dataset) do
+    if lphr2.parse_request(v) < 0 then
+        error("lphr could not parse correctly")
+    end
+end
+local t2 = os.time()
+print(string.format("lphr.r2.parse_request used %d sec, speed %s per second.", t2-t1, REPEAT_TIMES/(t2-t1)))
+
+collectgarbage("collect")
+
+print("---- lphr.c.r2.parse_request ----")
+local t1 = os.time()
+for _, v in ipairs(dataset) do
+    if lphrc2.parse_request(v) < 0 then
+        error("lphr could not parse correctly")
+    end
+end
+local t2 = os.time()
+print(string.format("lphr.c.r2.parse_request used %d sec, speed %s request(s) per second.", t2-t1, REPEAT_TIMES/(t2-t1)))
