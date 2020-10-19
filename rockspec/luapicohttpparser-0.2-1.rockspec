@@ -1,8 +1,9 @@
 rockspec_format = "3.0"
 package = "luapicohttpparser"
-version = "git-0"
+version = "0.2-1"
 source = {
    url = "git+https://github.com/thislight/luapicohttpparser.git",
+   tag = "v0.2-1"
 }
 description = {
    homepage = "https://github.com/thislight/luapicohttpparser",
